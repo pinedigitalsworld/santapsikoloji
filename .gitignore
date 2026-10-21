@@ -39,3 +39,12 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+.taste-skill/
+
+# panel verileri (mesajlar, yüklenen görseller, düzenlemeler)
+/data/messages.json
+/data/uploads/
+
+# araç / yapay zeka yardımcı dosyaları
+/.claude/
+/.taste-skill/
