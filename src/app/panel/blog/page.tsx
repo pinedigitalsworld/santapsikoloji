@@ -10,7 +10,7 @@ const btn = "inline-flex min-h-9 items-center gap-2 rounded-full px-4 text-sm fo
 
 export default async function BlogList() {
   await requireAdmin();
-  const posts = getAllPosts();
+  const posts = await getAllPosts();
   return (
     <>
       <PageTitle title="Blog yazıları" lead="Yazı ekleyin, düzenleyin ya da kaldırın. Taslaklar sitede görünmez.">

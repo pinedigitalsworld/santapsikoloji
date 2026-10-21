@@ -8,7 +8,7 @@ export default async function FaqAdmin() {
   return (
     <>
       <PageTitle title="Sık sorulan sorular" lead="Soruları ekleyin, sırasını değiştirin ya da silin. Ana sayfada ve SSS sayfasında görünür." />
-      <FaqManager items={getFaq()} />
+      <FaqManager items={await getFaq()} />
     </>
   );
 }

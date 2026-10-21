@@ -12,10 +12,10 @@ type Props = { params: Promise<{ slug: string }> };
 
 // Panelden eklenen yeni sayfalar derlemeden sonra da istek anında oluşturulur.
 export const dynamicParams = true;
-export const generateStaticParams = () => getPosts().map((p) => ({ slug: p.slug }));
+export const generateStaticParams = async () => (await getPosts()).map((p) => ({ slug: p.slug }));
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const p = getPost((await params).slug);
+  const p = await getPost((await params).slug);
   if (!p) return {};
   return {
     title: p.seoTitle,
@@ -26,9 +26,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function PostPage({ params }: Props) {
-  const p = getPost((await params).slug);
+  const p = await getPost((await params).slug);
   if (!p) notFound();
-  const more = getPosts().filter((x) => x.slug !== p.slug).slice(0, 3);
+  const more = (await getPosts()).filter((x) => x.slug !== p.slug).slice(0, 3);
   const date = new Date(p.date).toLocaleDateString("tr-TR", { day: "numeric", month: "long", year: "numeric" });
   return (
     <>

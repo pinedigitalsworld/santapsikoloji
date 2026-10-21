@@ -48,3 +48,6 @@ next-env.d.ts
 # araç / yapay zeka yardımcı dosyaları
 /.claude/
 /.taste-skill/
+
+# ortam değişkeni örneği repoda kalsın (değer içermez)
+!.env.example

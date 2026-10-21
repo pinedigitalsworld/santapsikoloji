@@ -9,8 +9,8 @@ export const metadata: Metadata = {
   alternates: { canonical: "/hizmetlerimiz" },
 };
 
-export default function Services() {
-  const site = getSite();
+export default async function Services() {
+  const site = await getSite();
   return (
     <>
       <PageHero

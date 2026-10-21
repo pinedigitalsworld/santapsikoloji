@@ -4,6 +4,7 @@ import { Login } from "@/components/panel/Login";
 import { Card, PageTitle } from "@/components/panel/kit";
 import { authConfigured, isAdmin } from "@/lib/auth";
 import { getAllPosts, getTestimonials } from "@/lib/content";
+import { integrations } from "@/lib/integrations";
 import { readMessages, readOverrides } from "@/lib/store";
 
 export const dynamic = "force-dynamic";
@@ -19,16 +20,15 @@ function greeting() {
 export default async function PanelHome() {
   if (!(await isAdmin())) return <Login configured={authConfigured()} />;
 
-  const messages = readMessages();
+  const [messages, posts, testimonials, overrides] = await Promise.all([readMessages(), getAllPosts(), getTestimonials(), readOverrides()]);
   const unread = messages.filter((m) => !m.read).length;
-  const posts = getAllPosts();
   const drafts = posts.filter((p) => !p.published).length;
-  const edits = Object.keys(readOverrides()).length;
+  const edits = Object.keys(overrides).length;
 
   const stats: { label: string; value: number; sub: string; href: string; icon: IconName; hot?: boolean }[] = [
     { label: "Okunmamış mesaj", value: unread, sub: `${messages.length} mesajın ${unread} tanesi yeni`, href: "/panel/mesajlar", icon: "inbox", hot: unread > 0 },
     { label: "Blog yazısı", value: posts.length, sub: drafts ? `${drafts} taslak` : "Hepsi yayında", href: "/panel/blog", icon: "blog" },
-    { label: "Danışan yorumu", value: getTestimonials().length, sub: "Sitede yayında", href: "/panel/yorumlar", icon: "quote" },
+    { label: "Danışan yorumu", value: testimonials.length, sub: "Sitede yayında", href: "/panel/yorumlar", icon: "quote" },
     { label: "Site düzenlemesi", value: edits, sub: "Metin ve görsel değişikliği", href: "/panel/duzenleme", icon: "wand" },
   ];
 
@@ -81,6 +81,18 @@ export default async function PanelHome() {
           </ul>
         </Card>
       </div>
+
+      <Card className="mt-6">
+        <h2 className="serif text-2xl">Bağlantılar</h2>
+        <ul className="mt-4 grid gap-x-10 gap-y-3 md:grid-cols-2">
+          {integrations().map((i) => (
+            <li key={i.name} className="flex items-start gap-3">
+              <span aria-hidden className={`mt-2 size-2.5 shrink-0 rounded-full ${i.ok ? "bg-[#4f9a5d]" : i.optional ? "bg-ink/25" : "bg-[#b4452f]"}`} />
+              <span><b className="font-medium">{i.name}</b><span className={`block text-sm ${!i.ok && !i.optional ? "text-[#b4452f]" : "text-ink-soft"}`}>{i.detail}</span></span>
+            </li>
+          ))}
+        </ul>
+      </Card>
 
       <Card className="mt-6 bg-moss-deep! text-paper! on-dark">
         <div className="flex flex-wrap items-center justify-between gap-6">

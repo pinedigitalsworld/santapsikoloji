@@ -9,8 +9,8 @@ export const metadata: Metadata = {
   alternates: { canonical: "/hakkimizda" },
 };
 
-export default function About() {
-  const about = getAbout();
+export default async function About() {
+  const about = await getAbout();
   return (
     <>
       <PageHeader title="Yanınızda olan profesyonel destek" lead={about.support} edKey="page.about" />

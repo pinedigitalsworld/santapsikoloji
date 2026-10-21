@@ -31,8 +31,7 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = { themeColor: "#f2f1ee", width: "device-width", initialScale: 1 };
 
-const businessLd = () => {
-  const s = getSite();
+const businessLd = (s: Awaited<ReturnType<typeof getSite>>) => {
   return {
   "@context": "https://schema.org",
   "@type": ["Psychologist", "LocalBusiness"],
@@ -50,16 +49,17 @@ const businessLd = () => {
   };
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const [s, groups] = await Promise.all([getSite(), getServiceGroups()]);
   return (
     <html lang="tr" data-scroll-behavior="smooth" className={`${fraunces.variable} ${instrument.variable}`}>
       <body className="flex min-h-screen flex-col">
         <SiteChrome
-          header={<Header site={{ whatsapp: getSite().whatsapp, phoneHref: getSite().phoneHref }} groups={getServiceGroups().map((g) => ({ id: g.id, title: g.title, lead: g.lead, items: g.items.map((i) => ({ slug: i.slug, title: i.title })) }))} />}
+          header={<Header site={{ whatsapp: s.whatsapp, phoneHref: s.phoneHref }} groups={groups.map((g) => ({ id: g.id, title: g.title, lead: g.lead, items: g.items.map((i) => ({ slug: i.slug, title: i.title })) }))} />}
           footer={<Footer />}
-          mobileCta={<MobileCta site={{ whatsapp: getSite().whatsapp, phoneHref: getSite().phoneHref }} />}
+          mobileCta={<MobileCta site={{ whatsapp: s.whatsapp, phoneHref: s.phoneHref }} />}
         >
-          <JsonLd data={businessLd()} />
+          <JsonLd data={businessLd(s)} />
           {children}
         </SiteChrome>
         <EditorLoader />

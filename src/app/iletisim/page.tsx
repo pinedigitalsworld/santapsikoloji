@@ -9,8 +9,8 @@ export const metadata: Metadata = {
   alternates: { canonical: "/iletisim" },
 };
 
-export default function Contact() {
-  const site = getSite();
+export default async function Contact() {
+  const site = await getSite();
   const link = "underline underline-offset-4 hover:text-clay";
   return (
     <>

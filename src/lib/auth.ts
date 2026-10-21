@@ -1,6 +1,7 @@
 import { createHash, createHmac, timingSafeEqual } from "node:crypto";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { rateClear, rateHit } from "@/lib/store";
 
 export const SESSION_COOKIE = "santa_panel";
 /** Yalnızca arayüze "giriş yapılmış olabilir" ipucu verir; yetki vermez. */
@@ -47,16 +48,9 @@ export async function requireAdmin() {
 
 /* ---------- API yardımcıları ---------- */
 
-/** Kaba kuvvet denemelerine karşı bellek içi sınır. */
-const hits = new Map<string, { n: number; reset: number }>();
-export function rateLimit(key: string, max: number, windowMs: number) {
-  const now = Date.now();
-  const h = hits.get(key);
-  if (!h || h.reset < now) { hits.set(key, { n: 1, reset: now + windowMs }); return true; }
-  h.n += 1;
-  return h.n <= max;
-}
-export const clearRate = (key: string) => hits.delete(key);
+/** Kaba kuvvet denemelerine karşı sınır. Veritabanı varsa tüm sunucusuz örnekler arasında ortaktır. */
+export const rateLimit = rateHit;
+export const clearRate = rateClear;
 
 export const clientIp = (req: Request) => req.headers.get("x-forwarded-for")?.split(",")[0].trim() || "local";
 

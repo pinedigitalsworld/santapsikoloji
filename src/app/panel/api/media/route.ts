@@ -1,8 +1,9 @@
 import fs from "node:fs";
 import path from "node:path";
 import { randomBytes } from "node:crypto";
-import { fail, slugify } from "@/lib/api";
+import { body, fail, slugify } from "@/lib/api";
 import { guard } from "@/lib/auth";
+import { cloudinaryConfigured, deleteCloudinary, publicIdOf } from "@/lib/cloudinary";
 import { listMedia } from "@/lib/media";
 import { UPLOAD_DIR } from "@/lib/store";
 
@@ -22,12 +23,14 @@ function detect(buf: Buffer): string | null {
 export async function GET(req: Request) {
   const denied = await guard(req);
   if (denied) return denied;
-  return Response.json({ files: listMedia() });
+  return Response.json({ files: await listMedia() });
 }
 
+/** Yerel yükleme (Cloudinary tanımlı değilken). Cloudinary varsa tarayıcı doğrudan oraya yükler. */
 export async function POST(req: Request) {
   const denied = await guard(req);
   if (denied) return denied;
+  if (cloudinaryConfigured()) return fail("Görseller Cloudinary'ye yüklenir.", 400);
   let form: FormData;
   try { form = await req.formData(); } catch { return fail("Dosya okunamadı."); }
   const files = form.getAll("file").filter((f): f is File => f instanceof File);
@@ -45,4 +48,21 @@ export async function POST(req: Request) {
     saved.push(`/uploads/${name}`);
   }
   return Response.json({ ok: true, saved });
+}
+
+/** Yüklenen bir görseli siler (sitenin kendi görselleri silinemez). */
+export async function DELETE(req: Request) {
+  const denied = await guard(req);
+  if (denied) return denied;
+  const b = await body<{ src?: string }>(req);
+  const src = typeof b?.src === "string" ? b.src : "";
+  const local = /^\/uploads\/([\w.\-]+)$/.exec(src);
+  if (local) {
+    try { fs.unlinkSync(path.join(UPLOAD_DIR, local[1])); } catch { return fail("Dosya bulunamadı.", 404); }
+    return Response.json({ ok: true });
+  }
+  const id = publicIdOf(src);
+  if (!id) return fail("Bu görsel silinemez.");
+  try { await deleteCloudinary(id); } catch (e) { return fail((e as Error).message, 502); }
+  return Response.json({ ok: true });
 }

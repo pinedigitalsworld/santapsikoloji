@@ -13,7 +13,7 @@ type Props = { params: Promise<{ slug: string }> };
 
 // Panelden eklenen yeni sayfalar derlemeden sonra da istek anında oluşturulur.
 export const dynamicParams = true;
-export const generateStaticParams = () => getTeam().map((m) => ({ slug: m.slug }));
+export const generateStaticParams = async () => (await getTeam()).map((m) => ({ slug: m.slug }));
 
 const firstText = (blocks: Block[]) => {
   const p = blocks.find((b) => b.type === "p");
@@ -21,7 +21,7 @@ const firstText = (blocks: Block[]) => {
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const m = getMember((await params).slug);
+  const m = await getMember((await params).slug);
   if (!m) return {};
   return {
     title: `${m.name}, ${m.role.split(" · ")[0]}`,
@@ -32,7 +32,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function MemberPage({ params }: Props) {
-  const m = getMember((await params).slug);
+  const m = await getMember((await params).slug);
   if (!m) notFound();
   return (
     <>
@@ -47,7 +47,7 @@ export default async function MemberPage({ params }: Props) {
           <h1 className="display rise mt-4 text-[clamp(2.5rem,6vw,4.5rem)]">{m.name}</h1>
           <p className="serif mt-2 text-xl text-clay">{m.role}</p>
           <Prose blocks={m.blocks} className="mt-8 max-w-2xl" />
-          <div className="mt-10"><ButtonLink href={getSite().whatsapp}>{m.name.split(" ")[0]} ile randevu alın</ButtonLink></div>
+          <div className="mt-10"><ButtonLink href={(await getSite()).whatsapp}>{m.name.split(" ")[0]} ile randevu alın</ButtonLink></div>
         </div>
       </article>
       <div className="mt-28"><ContactBand /></div>

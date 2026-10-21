@@ -1,4 +1,4 @@
-import { IMAGE_RE, body, fail, refreshSite, str } from "@/lib/api";
+import { isImage, body, fail, refreshSite, str } from "@/lib/api";
 import { guard } from "@/lib/auth";
 import { mutateOverrides } from "@/lib/store";
 
@@ -13,8 +13,8 @@ export async function PUT(req: Request) {
   if (!b || typeof b.key !== "string" || !KEY_RE.test(b.key)) return fail("Geçersiz anahtar.");
   const img = b.kind === "img";
   const storeKey = img ? `img:${b.key}` : b.key;
-  const value = str(b.value, img ? 200 : 2000);
-  if (img && !IMAGE_RE.test(value)) return fail("Görsel yolu geçersiz.");
+  const value = str(b.value, img ? 500 : 2000);
+  if (img && !isImage(value)) return fail("Görsel yolu geçersiz.");
   await mutateOverrides((o) => { if (value) o[storeKey] = value; else delete o[storeKey]; });
   refreshSite();
   return Response.json({ ok: true });

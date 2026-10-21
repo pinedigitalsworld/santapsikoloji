@@ -16,7 +16,7 @@ const steps = [
 
 export default async function EditMode() {
   await requireAdmin();
-  const items = Object.entries(readOverrides());
+  const items = Object.entries(await readOverrides());
   return (
     <>
       <PageTitle title="Siteyi düzenle" lead="Siteyi ziyaretçilerin gördüğü hâliyle açın ve doğrudan sayfa üzerinde değişiklik yapın.">

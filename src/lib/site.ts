@@ -1,7 +1,8 @@
 export const site = {
   name: "Santa Psikoloji",
   legalName: "Santa Eğitim ve Danışmanlık Ltd.",
-  url: "https://www.santapsikoloji.com",
+  // Canonical, sitemap ve paylaşım adresleri için. Vercel'de SITE_URL ile alan adı verilir.
+  url: (process.env.SITE_URL ?? "https://www.santapsikoloji.com").replace(/\/+$/, ""),
   tagline: "Psikoloji, Eğitim & Danışmanlık",
   description:
     "Ankara Çankaya'da bireysel, çift, çocuk-ergen ve aile danışmanlığı. Bilimsel temelli, etik ilkelere bağlı, güvenli bir terapi alanı.",

@@ -7,8 +7,8 @@ import { readContent } from "@/lib/store";
 export default async function EditMember({ params }: { params: Promise<{ slug: string }> }) {
   await requireAdmin();
   const slug = (await params).slug;
-  const raw = readContent().team.find((x) => x.slug === slug);
-  const m = getMember(slug);
+  const raw = (await readContent()).team.find((x) => x.slug === slug);
+  const m = await getMember(slug);
   if (!raw || !m) notFound();
   return <ItemEditor collection="team" noun="Psikolog" backHref="/panel/ekip" backLabel="Psikologlar" titleLabel="Ad soyad (unvanla birlikte)" item={{ slug, title: raw.title.trim(), text: raw.text, image: m.image, role: m.role, position: m.position }} />;
 }

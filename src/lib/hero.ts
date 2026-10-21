@@ -1,4 +1,4 @@
-import { ed, getSite } from "@/lib/site-server";
+import { getSite } from "@/lib/site-server";
 import { readOverrides } from "@/lib/store";
 
 export type Slide = {
@@ -9,9 +9,9 @@ export type Slide = {
 };
 
 /** Ana sayfa karşılama slaytları. Metin ve görseller düzenleme modunda değiştirilebilir. */
-export function getHeroSlides(): Slide[] {
-  const site = getSite();
-  const o = readOverrides();
+export async function getHeroSlides(): Promise<Slide[]> {
+  const site = await getSite();
+  const o = await readOverrides();
   const base: Slide[] = [
     {
       id: "oda",
@@ -38,9 +38,9 @@ export function getHeroSlides(): Slide[] {
   ];
   return base.map((s) => ({
     ...s,
-    title: ed(`hero.${s.id}.title`, s.title),
-    text: ed(`hero.${s.id}.text`, s.text),
-    cta: { ...s.cta, label: ed(`hero.${s.id}.cta`, s.cta.label) },
+    title: o[`hero.${s.id}.title`] ?? s.title,
+    text: o[`hero.${s.id}.text`] ?? s.text,
+    cta: { ...s.cta, label: o[`hero.${s.id}.cta`] ?? s.cta.label },
     image: o[`img:hero.${s.id}.image`] ?? s.image,
   }));
 }

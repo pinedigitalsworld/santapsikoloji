@@ -4,10 +4,10 @@ import { Ed } from "@/components/Ed";
 import { readOverrides } from "@/lib/store";
 
 /** Fotoğraflı iç sayfa karşılaması: menü fotoğrafın üzerinde cam olarak yüzer. */
-export function PageHero({ title, lead, image, alt = "", position = "50% 50%", edKey, children }: {
+export async function PageHero({ title, lead, image, alt = "", position = "50% 50%", edKey, children }: {
   title: string; lead?: string; image: string; alt?: string; position?: string; edKey?: string; children?: ReactNode;
 }) {
-  const shown = edKey ? readOverrides()[`img:${edKey}.image`] ?? image : image;
+  const shown = edKey ? (await readOverrides())[`img:${edKey}.image`] ?? image : image;
   return (
     <section data-hero {...(edKey ? { "data-ed-img": `${edKey}.image` } : {})} className="on-dark relative -mt-[5rem] flex min-h-[68svh] items-end overflow-hidden bg-ink text-paper">
       <Image src={shown} alt={alt} fill priority sizes="100vw" quality={85} className="object-cover" style={{ objectPosition: position }} />

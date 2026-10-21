@@ -12,8 +12,8 @@ export const metadata: Metadata = {
 
 const fmt = (d: string) => new Date(d).toLocaleDateString("tr-TR", { day: "numeric", month: "long", year: "numeric" });
 
-export default function Blog() {
-  const [featured, ...rest] = getPosts();
+export default async function Blog() {
+  const [featured, ...rest] = await getPosts();
   return (
     <>
       <PageHeader title="Blog" lead="Çift ilişkileri, aile ve cinsellik üzerine uzmanlarımızın yazıları." edKey="page.blog" />

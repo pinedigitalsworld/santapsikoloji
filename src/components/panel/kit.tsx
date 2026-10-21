@@ -12,6 +12,41 @@ export async function api<T = { ok: true }>(method: "POST" | "PUT" | "PATCH" | "
   return json as T;
 }
 
+/** Görselleri yükler: Cloudinary tanımlıysa doğrudan oraya (imzalı), değilse yerel klasöre. Adresleri döndürür. */
+export async function uploadImages(list: FileList | File[]): Promise<string[]> {
+  const files = Array.from(list).slice(0, 12);
+  const sign = await fetch("/panel/api/media/sign");
+  if (!sign.ok) throw new Error("Oturum süresi dolmuş olabilir. Sayfayı yenileyin.");
+  const cfg = await sign.json();
+  for (const f of files) {
+    if (!/^image\/(jpeg|png|webp|avif|gif)$/.test(f.type)) throw new Error(`“${f.name}” desteklenen bir görsel değil (JPG, PNG, WebP, AVIF, GIF).`);
+    if (f.size > 8 * 1024 * 1024) throw new Error(`“${f.name}” 8 MB sınırını aşıyor.`);
+  }
+  if (cfg.mode !== "cloudinary") {
+    const fd = new FormData();
+    files.forEach((f) => fd.append("file", f));
+    const res = await fetch("/panel/api/media", { method: "POST", body: fd });
+    const json = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(json.error ?? "Yükleme başarısız.");
+    return json.saved as string[];
+  }
+  const urls: string[] = [];
+  for (const f of files) {
+    const fd = new FormData();
+    fd.append("file", f);
+    fd.append("api_key", cfg.apiKey);
+    fd.append("timestamp", String(cfg.timestamp));
+    fd.append("signature", cfg.signature);
+    fd.append("folder", cfg.folder);
+    fd.append("allowed_formats", cfg.allowed_formats);
+    const res = await fetch(`https://api.cloudinary.com/v1_1/${cfg.cloudName}/image/upload`, { method: "POST", body: fd });
+    const json = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(json.error?.message ?? `“${f.name}” yüklenemedi.`);
+    urls.push(json.secure_url as string);
+  }
+  return urls;
+}
+
 /* ---------- Bildirimler ---------- */
 
 type ToastKind = "ok" | "err";
@@ -123,16 +158,12 @@ export function MediaPicker({ open, onClose, onPick, title = "Görsel seçin" }:
   }, [open, onClose]);
 
   async function upload(list: FileList | File[]) {
-    const fd = new FormData();
-    Array.from(list).forEach((f) => fd.append("file", f));
     setBusy(true);
     try {
-      const res = await fetch("/panel/api/media", { method: "POST", body: fd });
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.error);
+      const saved = await uploadImages(list);
       setVersion((v) => v + 1);
-      toast(`${json.saved.length} görsel yüklendi`);
-      if (json.saved.length === 1) onPick(json.saved[0]);
+      toast(`${saved.length} görsel yüklendi`);
+      if (saved.length === 1) onPick(saved[0]);
     } catch (e) { toast((e as Error).message, "err"); }
     setBusy(false);
   }

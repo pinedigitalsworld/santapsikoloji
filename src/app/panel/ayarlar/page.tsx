@@ -6,8 +6,7 @@ import { getSite } from "@/lib/site-server";
 
 export default async function SettingsAdmin() {
   await requireAdmin();
-  const s = getSite();
-  const a = getAbout();
+  const [s, a] = await Promise.all([getSite(), getAbout()]);
   return (
     <>
       <PageTitle title="Ayarlar" lead="İletişim bilgileri, çalışma saatleri ve Hakkımızda metinleri." />

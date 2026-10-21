@@ -11,8 +11,8 @@ export const metadata: Metadata = {
   alternates: { canonical: "/sss" },
 };
 
-export default function FaqPage() {
-  const items = getFaq();
+export default async function FaqPage() {
+  const items = await getFaq();
   return (
     <>
       <JsonLd data={{ "@context": "https://schema.org", "@type": "FAQPage", mainEntity: items.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })) }} />

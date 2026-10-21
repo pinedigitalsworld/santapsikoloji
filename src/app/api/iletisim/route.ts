@@ -1,12 +1,14 @@
 import { randomUUID } from "node:crypto";
+import { after } from "next/server";
 import { body, fail, str } from "@/lib/api";
 import { clientIp, rateLimit, sameOrigin } from "@/lib/auth";
+import { notifyNewMessage } from "@/lib/mail";
 import { mutateMessages } from "@/lib/store";
 
 /** İletişim formu: mesaj panelin "Mesajlar" bölümüne düşer. */
 export async function POST(req: Request) {
   if (!sameOrigin(req)) return fail("Geçersiz istek kaynağı.", 403);
-  if (!rateLimit(`msg:${clientIp(req)}`, 4, 10 * 60_000)) return fail("Kısa sürede çok fazla mesaj gönderdiniz. Lütfen biraz sonra tekrar deneyin.", 429);
+  if (!(await rateLimit(`msg:${clientIp(req)}`, 4, 10 * 60_000))) return fail("Kısa sürede çok fazla mesaj gönderdiniz. Lütfen biraz sonra tekrar deneyin.", 429);
   const b = await body<Record<string, unknown>>(req);
   if (!b) return fail("Geçersiz veri.");
   // Bal küpü alanı: botlar doldurur, insanlar görmez. Sessizce başarılı gibi yanıtlanır.
@@ -19,5 +21,6 @@ export async function POST(req: Request) {
     m.unshift({ id: randomUUID(), name, phone, email, message, createdAt: new Date().toISOString(), read: false });
     m.splice(1000); // dosya sonsuza dek büyümesin
   });
+  after(() => notifyNewMessage({ name, phone, email, message })); // yanıt gittikten sonra e-posta bildirimi
   return Response.json({ ok: true });
 }

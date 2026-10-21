@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { Icon } from "@/components/panel/icons";
-import { Btn, ConfirmBtn, api, useToast } from "@/components/panel/kit";
+import { Btn, ConfirmBtn, api, uploadImages, useToast } from "@/components/panel/kit";
 import type { MediaFile } from "@/lib/media";
 
 const kb = (n: number) => (n > 1024 * 1024 ? `${(n / 1024 / 1024).toFixed(1)} MB` : `${Math.round(n / 1024)} KB`);
@@ -18,20 +18,16 @@ export function MediaLibrary({ files }: { files: MediaFile[] }) {
   const site = files.filter((f) => f.source === "site");
 
   async function upload(list: FileList | File[]) {
-    const fd = new FormData();
-    Array.from(list).forEach((f) => fd.append("file", f));
     setBusy(true);
     try {
-      const res = await fetch("/panel/api/media", { method: "POST", body: fd });
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.error);
-      toast(`${json.saved.length} görsel yüklendi`);
+      const saved = await uploadImages(list);
+      toast(`${saved.length} görsel yüklendi`);
       router.refresh();
     } catch (e) { toast((e as Error).message, "err"); }
     setBusy(false);
   }
-  async function remove(name: string) {
-    try { await api("DELETE", `/panel/api/media/${name}`); toast("Görsel silindi"); router.refresh(); } catch (e) { toast((e as Error).message, "err"); }
+  async function remove(src: string) {
+    try { await api("DELETE", "/panel/api/media", { src }); toast("Görsel silindi"); router.refresh(); } catch (e) { toast((e as Error).message, "err"); }
   }
   async function copy(src: string) {
     try { await navigator.clipboard.writeText(src); toast("Yol kopyalandı"); } catch { toast(src); }
@@ -47,7 +43,7 @@ export function MediaLibrary({ files }: { files: MediaFile[] }) {
             <span className="min-w-0"><span className="block truncate text-sm">{f.name}</span><span className="text-xs text-ink-soft">{kb(f.size)}</span></span>
             <span className="flex shrink-0">
               <button type="button" onClick={() => copy(f.src)} className="rounded-full px-2.5 py-1.5 text-xs text-ink-soft hover:bg-ink/5 hover:text-ink">Kopyala</button>
-              {deletable && <ConfirmBtn onConfirm={() => remove(f.name)} label="Sil?">{""}</ConfirmBtn>}
+              {deletable && <ConfirmBtn onConfirm={() => remove(f.src)} label="Sil?">{""}</ConfirmBtn>}
             </span>
           </div>
         </li>

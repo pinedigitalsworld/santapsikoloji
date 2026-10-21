@@ -1,4 +1,4 @@
-import { IMAGE_RE, slugify, str } from "@/lib/api";
+import { isImage, slugify, str } from "@/lib/api";
 import { serviceGroups } from "@/lib/content";
 import { mutateContent, type RawContent, type RawItem } from "@/lib/store";
 
@@ -15,7 +15,7 @@ export const collections: Record<string, Cfg> = {
 
 type Result = { ok: true; slug: string } | { error: string; status?: number };
 
-const imageOk = (v: unknown) => typeof v === "string" && IMAGE_RE.test(v);
+const imageOk = (v: unknown) => typeof v === "string" && isImage(v);
 const posOk = (v: unknown) => typeof v === "string" && /^\d{1,3}% \d{1,3}%$/.test(v);
 
 /** Gelen alanları koleksiyona göre doğrular; yalnızca izin verilen alanları döndürür. */

@@ -1,16 +1,17 @@
 import { clean, toBlocks, summarize, metaDescription, readingMinutes, type Block } from "@/lib/text";
-import { readContent, readOverrides, readSettings, type RawItem } from "@/lib/store";
+import { readContent, readOverrides, readSettings, type RawContent, type RawItem } from "@/lib/store";
 
 export { toBlocks, summarize, metaDescription, readingMinutes };
 export type { Block };
 
 type Item = RawItem;
+type Raw = RawContent;
 
 
-export const img = (name: string | undefined) => (name ? (name.startsWith("/") ? name : `/images/${name}`) : undefined);
+export const img = (name: string | undefined) => (name ? (/^(\/|https:)/.test(name) ? name : `/images/${name}`) : undefined);
 
 /** Düzenleme modunda değiştirilen görsel varsa onu, yoksa verilen görseli döndürür. */
-export const imgOr = (key: string, fallback: string) => readOverrides()[`img:${key}`] ?? fallback;
+export const imgOr = async (key: string, fallback: string) => (await readOverrides())[`img:${key}`] ?? fallback;
 
 /* ---------- Hizmetler ---------- */
 
@@ -41,17 +42,17 @@ export const serviceGroups = [
   },
 ] as const;
 
-/** Ham veri değişmedikçe türetilmiş değeri yeniden hesaplamaz. */
+/** Aynı ham veri için türetilmiş değeri yeniden hesaplamaz (ham veri istek başına tek kez okunur). */
 const memo = new WeakMap<object, Map<string, unknown>>();
-function derived<T>(key: string, build: (raw: ReturnType<typeof readContent>) => T): T {
-  const raw = readContent();
+async function derived<T>(key: string, build: (raw: Raw) => T): Promise<T> {
+  const raw = await readContent();
   let m = memo.get(raw);
   if (!m) memo.set(raw, (m = new Map()));
   if (!m.has(key)) m.set(key, build(raw));
   return m.get(key) as T;
 }
 
-const buildServices = (raw: ReturnType<typeof readContent>) => (raw.services as Item[]).map((s) => ({
+const buildServices = (raw: Raw) => (raw.services as Item[]).map((s) => ({
   ...s,
   title: clean(s.title),
   image: img(s.images[0]),
@@ -62,23 +63,25 @@ const services = () => derived("services", buildServices);
 export type Service = ReturnType<typeof buildServices>[number];
 
 export const getServices = () => services();
-export const getService = (slug: string) => services().find((s) => s.slug === slug);
+export const getService = async (slug: string) => (await services()).find((s) => s.slug === slug);
 /** Hizmetin grubu: panelden seçilmişse o, yoksa koddaki varsayılan listeden. */
 const groupIdOf = (s: Service) => s.group ?? serviceGroups.find((g) => (g.slugs as readonly string[]).includes(s.slug))?.id;
-export const getServiceGroups = () =>
-  serviceGroups.map((g) => {
+export const getServiceGroups = async () => {
+  const all = await getServices();
+  return serviceGroups.map((g) => {
     const fixed = g.slugs as readonly string[];
     return {
       ...g,
       // Önce bilinen sıra, ardından panelden eklenen ya da gruba taşınan hizmetler.
       items: [
-        ...fixed.map((slug) => getService(slug)).filter((s): s is Service => Boolean(s) && groupIdOf(s as Service) === g.id),
-        ...getServices().filter((s) => !fixed.includes(s.slug) && groupIdOf(s) === g.id),
+        ...fixed.map((slug) => all.find((s) => s.slug === slug)).filter((s): s is Service => Boolean(s) && groupIdOf(s as Service) === g.id),
+        ...all.filter((s) => !fixed.includes(s.slug) && groupIdOf(s) === g.id),
       ],
     };
   });
-export const groupOfService = (slug: string) => {
-  const s = getService(slug);
+};
+export const groupOfService = async (slug: string) => {
+  const s = await getService(slug);
   return s ? serviceGroups.find((g) => g.id === groupIdOf(s)) : undefined;
 };
 
@@ -89,7 +92,7 @@ const teamMeta: Record<string, { role: string; photo: string; position?: string 
   "merve-nur-akil": { role: "Klinik Psikolog", photo: "IMG_2453.jpg", position: "50% 20%" },
 };
 
-const buildTeam = (raw: ReturnType<typeof readContent>) => (raw.team as Item[]).map((m) => {
+const buildTeam = (raw: Raw) => (raw.team as Item[]).map((m) => {
   const meta = teamMeta[m.slug];
   let blocks = toBlocks(m.text);
   const first = blocks[0];
@@ -103,8 +106,8 @@ const buildTeam = (raw: ReturnType<typeof readContent>) => (raw.team as Item[]).
 const team = () => derived("team", buildTeam);
 export type Member = ReturnType<typeof buildTeam>[number];
 const teamOrder = ["merve-nur-akil", "hazal-gul-akkus"];
-export const getTeam = () => [...team()].sort((a, b) => (teamOrder.indexOf(a.slug) + 99) % 99 - (teamOrder.indexOf(b.slug) + 99) % 99);
-export const getMember = (slug: string) => team().find((m) => m.slug === slug);
+export const getTeam = async () => [...(await team())].sort((a, b) => (teamOrder.indexOf(a.slug) + 99) % 99 - (teamOrder.indexOf(b.slug) + 99) % 99);
+export const getMember = async (slug: string) => (await team()).find((m) => m.slug === slug);
 
 /* ---------- Blog ---------- */
 
@@ -115,7 +118,7 @@ const seoTitles: Record<string, string> = {
   "cinsellikte-fanteziler-ve-parafili": "Cinsellikte Fanteziler ve Parafili",
 };
 
-const buildPosts = (raw: ReturnType<typeof readContent>) => (raw.posts as Item[])
+const buildPosts = (raw: Raw) => (raw.posts as Item[])
   .map((p) => ({
     ...p,
     title: clean(p.title),
@@ -131,16 +134,16 @@ const buildPosts = (raw: ReturnType<typeof readContent>) => (raw.posts as Item[]
 export type Post = ReturnType<typeof buildPosts>[number];
 const posts = () => derived("posts", buildPosts);
 /** Sitede görünen (yayındaki) yazılar. */
-export const getPosts = () => posts().filter((p) => p.published);
+export const getPosts = async () => (await posts()).filter((p) => p.published);
 /** Panel için: taslaklar dahil tüm yazılar. */
 export const getAllPosts = () => posts();
-export const getPost = (slug: string) => getPosts().find((p) => p.slug === slug);
+export const getPost = async (slug: string) => (await getPosts()).find((p) => p.slug === slug);
 
 /* ---------- Yorumlar ---------- */
 
 // Kaynak yorumlarda noktadan sonra boşluk eksik; "Optimum Psikoloji" adı geçen yorumlar başka bir kuruma ait olduğundan alınmadı.
 const fixSpacing = (t: string) => clean(t).replace(/([a-zçğıöşü])([.!?])([A-ZÇĞİÖŞÜ])/g, "$1$2 $3");
-const buildTestimonials = (raw: ReturnType<typeof readContent>) => (raw.testimonials as Item[])
+const buildTestimonials = (raw: Raw) => (raw.testimonials as Item[])
   .filter((t) => !/optimum/i.test(t.text))
   .map((t) => ({ slug: t.slug, name: clean(t.title), text: fixSpacing(t.text) }));
 export const getTestimonials = () => derived("testimonials", buildTestimonials);
@@ -175,8 +178,8 @@ const aboutDefaults = {
   ],
 };
 
-export const getAbout = () => {
-  const o = readSettings().about ?? {};
+export const getAbout = async () => {
+  const o = (await readSettings()).about ?? {};
   return {
     support: o.support?.trim() || aboutDefaults.support,
     mission: o.mission?.trim() || aboutDefaults.mission,

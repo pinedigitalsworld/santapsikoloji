@@ -10,8 +10,8 @@ function intl(phone: string) {
 }
 
 /** Panelden değiştirilebilen iletişim bilgileriyle birleştirilmiş site bilgisi. */
-export function getSite() {
-  const s = readSettings();
+export async function getSite() {
+  const s = await readSettings();
   const phone = s.phone?.trim() || defaults.phone;
   const address = s.address?.trim() || defaults.address;
   const digits = intl(phone);
@@ -27,7 +27,7 @@ export function getSite() {
     hours: s.hours?.length ? s.hours : [...defaults.hours],
   };
 }
-export type SiteInfo = ReturnType<typeof getSite>;
+export type SiteInfo = Awaited<ReturnType<typeof getSite>>;
 
 /** Düzenleme modunda değiştirilen metin; yoksa varsayılan. */
-export const ed = (key: string, fallback: string) => readOverrides()[key] ?? fallback;
+export const ed = async (key: string, fallback: string) => (await readOverrides())[key] ?? fallback;

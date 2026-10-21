@@ -6,8 +6,8 @@ import { Ed } from "@/components/Ed";
 import { EditChip } from "@/components/EditChip";
 import { getSite } from "@/lib/site-server";
 
-export function ContactBand() {
-  const site = getSite();
+export async function ContactBand() {
+  const site = await getSite();
   return (
     <section className="container-page" aria-labelledby="iletisim-baslik">
       <div className="grid gap-12 md:grid-cols-[1.25fr_1fr] md:items-end md:gap-24">
@@ -45,7 +45,8 @@ export function PostCard({ post }: { post: Post }) {
   );
 }
 
-export function LatestPosts({ count = 3 }: { count?: number }) {
+export async function LatestPosts({ count = 3 }: { count?: number }) {
+  const posts = await getPosts();
   return (
     <section className="container-page mt-28">
       <div className="flex items-end justify-between gap-6">
@@ -53,14 +54,14 @@ export function LatestPosts({ count = 3 }: { count?: number }) {
         <Link href="/blog" className="hidden shrink-0 items-center gap-2 text-clay hover:underline underline-offset-4 sm:inline-flex">Tümü <Arrow /></Link>
       </div>
       <div className="mt-12 grid gap-10 md:grid-cols-3">
-        {getPosts().slice(0, count).map((p, i) => <Reveal key={p.slug} delay={i * 90}><PostCard post={p} /></Reveal>)}
+        {posts.slice(0, count).map((p, i) => <Reveal key={p.slug} delay={i * 90}><PostCard post={p} /></Reveal>)}
       </div>
     </section>
   );
 }
 
-export function AudiencePaths() {
-  const groups = getServiceGroups();
+export async function AudiencePaths() {
+  const groups = await getServiceGroups();
   const labels: Record<string, string> = {
     "cocuk-ergen": "Çocuğum ve ergenim için",
     yetiskin: "Kendim için",
@@ -83,10 +84,9 @@ export function AudiencePaths() {
   );
 }
 
-export function FeaturedServices() {
-  const big = getService("emdr-terapisi");
-  const rest = ["bilissel-davranisci-terapi", "oyun-terapisi", "cift-danismanligi", "moxo-dikkat-testi"]
-    .map((s) => getService(s))
+export async function FeaturedServices() {
+  const big = await getService("emdr-terapisi");
+  const rest = (await Promise.all(["bilissel-davranisci-terapi", "oyun-terapisi", "cift-danismanligi", "moxo-dikkat-testi"].map((s) => getService(s))))
     .filter((s): s is NonNullable<typeof s> => Boolean(s));
   if (!big) return null;
   return (
@@ -114,8 +114,8 @@ export function FeaturedServices() {
   );
 }
 
-export function ServiceCatalog() {
-  const groups = getServiceGroups();
+export async function ServiceCatalog() {
+  const groups = await getServiceGroups();
   return (
     <>
       <nav aria-label="Hizmet grupları" className="pt-8">
@@ -154,10 +154,11 @@ export function ServiceCatalog() {
   );
 }
 
-export function TeamGrid() {
+export async function TeamGrid() {
+  const team = await getTeam();
   return (
     <ul className="grid max-w-4xl gap-6 sm:grid-cols-2">
-      {getTeam().map((m, i) => {
+      {team.map((m, i) => {
         const intro = m.blocks.find((b) => b.type === "p");
         return (
           <Reveal as="li" key={m.slug} delay={i * 110} className="relative">
@@ -178,8 +179,8 @@ export function TeamGrid() {
   );
 }
 
-export function Testimonials({ limit, short }: { limit?: number; short?: boolean }) {
-  let list = getTestimonials();
+export async function Testimonials({ limit, short }: { limit?: number; short?: boolean }) {
+  let list = await getTestimonials();
   if (short) list = list.filter((t) => t.text.length < 420);
   if (limit) list = list.slice(0, limit);
   return (
@@ -197,8 +198,8 @@ export function Testimonials({ limit, short }: { limit?: number; short?: boolean
   );
 }
 
-export function FaqPreview({ count }: { count?: number }) {
-  const items = getFaq();
+export async function FaqPreview({ count }: { count?: number }) {
+  const items = await getFaq();
   return <Faq items={count ? items.slice(0, count) : items} />;
 }
 

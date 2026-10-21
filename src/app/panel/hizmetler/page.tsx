@@ -12,7 +12,7 @@ export default async function ServicesAdmin() {
         <Link href="/panel/hizmetler/yeni" className="inline-flex min-h-11 items-center gap-2 rounded-full bg-clay px-6 font-medium text-paper transition-colors hover:bg-clay-deep"><Icon n="plus" size={17} />Yeni hizmet</Link>
       </PageTitle>
       <div className="space-y-12">
-        {getServiceGroups().map((g) => (
+        {(await getServiceGroups()).map((g) => (
           <section key={g.id}>
             <h2 className="serif mb-4 text-2xl">{g.title} <span className="text-ink-soft">({g.items.length})</span></h2>
             <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">

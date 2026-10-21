@@ -8,7 +8,7 @@ export default async function TestimonialsAdmin() {
   return (
     <>
       <PageTitle title="Danışan yorumları" lead="Sitede “Danışanlarımızın deneyimleri” bölümünde görünen yorumlar. Yalnızca danışanın izniyle yayınlayın." />
-      <TestimonialsManager items={getTestimonials()} />
+      <TestimonialsManager items={await getTestimonials()} />
     </>
   );
 }

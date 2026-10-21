@@ -20,11 +20,11 @@ export function ButtonLink({
     : <Link href={href} className={cls}>{children}</Link>;
 }
 
-export function Photo({
+export async function Photo({
   src, alt, sizes, className = "", priority, position, edit,
 }: { src: string; alt: string; sizes: string; className?: string; priority?: boolean; position?: string; edit?: string }) {
   // `edit` verilirse görsel düzenleme modunda yönetici tarafından değiştirilebilir.
-  const shown = edit ? readOverrides()[`img:${edit}`] ?? src : src;
+  const shown = edit ? (await readOverrides())[`img:${edit}`] ?? src : src;
   return (
     <div className={`relative overflow-hidden bg-linen ${className}`} {...(edit ? { "data-ed-img": edit } : {})}>
       <Image src={shown} alt={alt} fill sizes={sizes} priority={priority} className="object-cover" style={position ? { objectPosition: position } : undefined} />

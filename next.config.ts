@@ -8,9 +8,9 @@ const csp = [
   "default-src 'self'",
   `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob:",
+  "img-src 'self' data: blob: https://res.cloudinary.com",
   "font-src 'self'",
-  "connect-src 'self'",
+  "connect-src 'self' https://api.cloudinary.com",
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",
@@ -41,7 +41,13 @@ const redirects = [
 const nextConfig: NextConfig = {
   redirects: async () => redirects,
   poweredByHeader: false,
-  images: { formats: ["image/avif", "image/webp"] },
+  images: {
+    formats: ["image/avif", "image/webp"],
+    qualities: [75, 85],
+    remotePatterns: [{ protocol: "https", hostname: "res.cloudinary.com" }], // panelden yüklenen görseller
+  },
+  // Panel, sitenin ilk kurulumundan gelen görselleri sunucu tarafında listeler; Vercel'de dosyaların pakete girmesi için.
+  outputFileTracingIncludes: { "/panel/**": ["./public/images/**/*"] },
   turbopack: {
     rules: {
       "*.css": {

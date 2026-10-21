@@ -8,6 +8,6 @@ export const metadata: Metadata = { title: { absolute: "Yönetim Paneli | Santa 
 
 export default async function PanelLayout({ children }: { children: React.ReactNode }) {
   const admin = await isAdmin();
-  const unread = admin ? readMessages().filter((m) => !m.read).length : 0;
+  const unread = admin ? (await readMessages()).filter((m) => !m.read).length : 0;
   return <ToastProvider>{admin ? <Shell unread={unread}>{children}</Shell> : children}</ToastProvider>;
 }

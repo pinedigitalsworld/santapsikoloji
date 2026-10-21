@@ -11,7 +11,7 @@ export default async function Messages({ searchParams }: { searchParams: Promise
   return (
     <>
       <PageTitle title="Mesajlar" lead="İletişim formundan gelen mesajlar. Telefon, WhatsApp ya da e-posta ile tek dokunuşla yanıtlayın." />
-      <Inbox messages={readMessages()} initialId={id} />
+      <Inbox messages={await readMessages()} initialId={id} />
     </>
   );
 }

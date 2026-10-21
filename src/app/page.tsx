@@ -8,10 +8,11 @@ import { getFaq } from "@/lib/content";
 
 const section = "container-page mt-24 sm:mt-32 lg:mt-44";
 
-export default function Home() {
+export default async function Home() {
+  const [slides, faq] = await Promise.all([getHeroSlides(), getFaq()]);
   return (
     <>
-      <HeroSlider slides={getHeroSlides()} />
+      <HeroSlider slides={slides} />
 
       <section className={section} aria-labelledby="destek">
         <h2 id="destek" className="display max-w-3xl text-[clamp(2.25rem,4.8vw,4rem)]"><Ed k="home.support.title">Nasıl bir destek arıyorsunuz?</Ed></h2>
@@ -64,7 +65,7 @@ export default function Home() {
           <h2 id="sss" className="display text-[clamp(2.25rem,4.8vw,4rem)]"><Ed k="home.faq.title">Merak edilen sorular</Ed></h2>
           <Link href="/sss" className="mt-6 inline-flex min-h-11 items-center gap-2 text-clay underline-offset-4 hover:underline">Tüm sorular <Arrow /></Link>
         </div>
-        <Faq items={getFaq()} />
+        <Faq items={faq} />
       </section>
 
       <LatestPosts />

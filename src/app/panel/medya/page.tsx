@@ -10,7 +10,7 @@ export default async function MediaAdmin() {
   return (
     <>
       <PageTitle title="Medya kütüphanesi" lead="Yazılarda ve sayfalarda kullanacağınız görselleri yükleyin ve yönetin." />
-      <MediaLibrary files={listMedia()} />
+      <MediaLibrary files={await listMedia()} />
     </>
   );
 }

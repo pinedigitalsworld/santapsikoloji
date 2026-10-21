@@ -6,17 +6,16 @@ import { JsonLd } from "@/components/JsonLd";
 import { ContactBand } from "@/components/Sections";
 import { Arrow, ButtonLink, Photo, Prose } from "@/components/ui";
 import { getService, getServiceGroups, getServices, groupOfService, summarize } from "@/lib/content";
-import { site } from "@/lib/site";
 import { getSite } from "@/lib/site-server";
 
 type Props = { params: Promise<{ slug: string }> };
 
 // Panelden eklenen yeni sayfalar derlemeden sonra da istek anında oluşturulur.
 export const dynamicParams = true;
-export const generateStaticParams = () => getServices().map((s) => ({ slug: s.slug }));
+export const generateStaticParams = async () => (await getServices()).map((s) => ({ slug: s.slug }));
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const s = getService((await params).slug);
+  const s = await getService((await params).slug);
   if (!s) return {};
   return {
     title: s.title,
@@ -27,10 +26,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function ServicePage({ params }: Props) {
-  const s = getService((await params).slug);
+  const s = await getService((await params).slug);
   if (!s) notFound();
-  const group = groupOfService(s.slug);
-  const related = (getServiceGroups().find((g) => g.id === group?.id)?.items ?? []).filter((x) => x.slug !== s.slug).slice(0, 4);
+  const [group, groups, site] = await Promise.all([groupOfService(s.slug), getServiceGroups(), getSite()]);
+  const related = (groups.find((g) => g.id === group?.id)?.items ?? []).filter((x) => x.slug !== s.slug).slice(0, 4);
 
   return (
     <>
@@ -52,8 +51,8 @@ export default async function ServicePage({ params }: Props) {
               <h2 className="serif text-2xl">Randevu ve bilgi</h2>
               <p className="mt-3 text-ink-soft">Süreç hakkında bilgi almak ve uygun gün ile saati birlikte belirlemek için bize ulaşın.</p>
               <div className="mt-6 flex flex-col gap-3">
-                <ButtonLink href={getSite().whatsapp}>WhatsApp ile yazın</ButtonLink>
-                <ButtonLink href={getSite().phoneHref} variant="line">{getSite().phone}</ButtonLink>
+                <ButtonLink href={site.whatsapp}>WhatsApp ile yazın</ButtonLink>
+                <ButtonLink href={site.phoneHref} variant="line">{site.phone}</ButtonLink>
               </div>
             </div>
             {related.length > 0 && (

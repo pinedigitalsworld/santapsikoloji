@@ -4,8 +4,8 @@ import { Ed } from "@/components/Ed";
 import { nav } from "@/lib/site";
 import { getSite } from "@/lib/site-server";
 
-export function Footer() {
-  const site = getSite();
+export async function Footer() {
+  const site = await getSite();
   return (
     <footer className="on-dark mt-28 bg-moss-deep text-paper">
       <div className="container-page grid gap-12 py-16 md:grid-cols-[1.3fr_1fr_1fr_1.2fr]">
