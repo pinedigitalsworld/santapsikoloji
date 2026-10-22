@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const s = await getService((await params).slug);
   if (!s) return {};
   return {
-    title: `${s.title} Ankara`,
+    title: s.title,
     description: summarize(s.text, 155),
     alternates: { canonical: `/hizmetlerimiz/${s.slug}` },
     openGraph: { images: s.image ? [s.image] : undefined },
@@ -34,7 +34,7 @@ export default async function ServicePage({ params }: Props) {
 
   return (
     <>
-      <JsonLd data={{ "@context": "https://schema.org", "@type": "Service", name: s.title, provider: { "@type": "Psychologist", name: site.name, url: site.url }, areaServed: "Ankara", description: summarize(s.text, 200) }} />
+      <JsonLd data={{ "@context": "https://schema.org", "@type": "Service", name: s.title, provider: { "@type": "Psychologist", name: site.name, url: site.url }, areaServed: "Türkiye", description: summarize(s.text, 200) }} />
       <JsonLd data={breadcrumbLd([{ name: "Ana sayfa", path: "/" }, { name: "Hizmetlerimiz", path: "/hizmetlerimiz" }, { name: s.title, path: `/hizmetlerimiz/${s.slug}` }])} />
       <article className="container-page relative pt-12 md:pt-20">
         <EditChip href={`/panel/hizmetler/${s.slug}`} label="Hizmeti düzenle" />
@@ -45,7 +45,7 @@ export default async function ServicePage({ params }: Props) {
         <h1 className="display rise mt-5 max-w-4xl text-[clamp(2.5rem,6vw,4.75rem)]">{s.title}</h1>
         <div className="mt-12 grid gap-12 lg:grid-cols-[1.6fr_1fr] lg:gap-20">
           <div>
-            {s.image && <Photo src={s.image} alt={`${s.title}: Santa Psikoloji, Ankara`} sizes="(min-width:1024px) 60vw, 100vw" priority className="aspect-[16/9] rounded-[2rem]" />}
+            {s.image && <Photo src={s.image} alt={`${s.title}: Santa Psikoloji`} sizes="(min-width:1024px) 60vw, 100vw" priority className="aspect-[16/9] rounded-[2rem]" />}
             <Prose blocks={s.blocks} className="mt-10 max-w-2xl" />
           </div>
           <aside className="lg:sticky lg:top-28 lg:self-start">

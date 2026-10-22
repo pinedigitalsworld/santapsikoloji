@@ -5,7 +5,7 @@ export const site = {
   url: (process.env.SITE_URL ?? "https://www.santapsikoloji.com").replace(/\/+$/, ""),
   tagline: "Psikoloji, Eğitim & Danışmanlık",
   description:
-    "Ankara Çankaya'da bireysel, çift, çocuk-ergen ve aile danışmanlığı. Bilimsel temelli, etik ilkelere bağlı, güvenli bir terapi alanı.",
+    "Bireysel, çift, çocuk-ergen ve aile danışmanlığı: yüz yüze ve online. Bilimsel temelli, etik ilkelere bağlı, güvenli bir terapi alanı.",
   phone: "0544 726 83 06",
   phoneHref: "tel:+905447268306",
   whatsapp: "https://wa.me/905447268306",

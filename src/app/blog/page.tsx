@@ -6,7 +6,7 @@ import { getPosts } from "@/lib/content";
 
 export const metadata: Metadata = {
   title: "Psikoloji Blogu: Çift ve Aile İlişkileri",
-  description: "Çift ilişkileri, aile, cinsellik ve psikolojik iyi oluş üzerine uzman psikologlarımızın yazıları. Ankara Santa Psikoloji blogu.",
+  description: "Çift ilişkileri, aile, cinsellik ve psikolojik iyi oluş üzerine uzman psikologlarımızın yazıları. Santa Psikoloji blogu.",
   alternates: { canonical: "/blog" },
 };
 

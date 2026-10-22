@@ -17,13 +17,13 @@ const instrument = localFont({ src: [{ path: "./fonts/InstrumentSans-tr.woff2", 
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
-  title: { default: `Ankara Psikolog ve Psikolojik Danışmanlık | ${site.name}`, template: `%s | ${site.name}` },
+  title: { default: `Psikolog ve Online Psikolojik Danışmanlık | ${site.name}`, template: `%s | ${site.name}` },
   description: site.description,
   applicationName: site.name,
   alternates: { canonical: "/" },
   openGraph: {
     type: "website", locale: "tr_TR", siteName: site.name, url: "/",
-    title: `Ankara Psikolog ve Psikolojik Danışmanlık | ${site.name}`, description: site.description,
+    title: `Psikolog ve Online Psikolojik Danışmanlık | ${site.name}`, description: site.description,
     images: [{ url: "/og.jpg", width: 1200, height: 630, alt: "Santa Psikoloji danışma odası: pencereden Ankara manzarası, kanepe ve bitkiler" }],
   },
   twitter: { card: "summary_large_image", images: ["/og.jpg"] },
@@ -46,7 +46,7 @@ const businessLd = (s: Awaited<ReturnType<typeof getSite>>) => {
   email: s.email,
   sameAs: [s.instagram],
   hasMap: s.mapsHref,
-  areaServed: { "@type": "City", name: "Ankara" },
+  areaServed: { "@type": "Country", name: "Türkiye" }, // yüz yüze (Ankara) ve online hizmet
   knowsLanguage: "tr",
   contactPoint: { "@type": "ContactPoint", telephone: s.phoneHref.replace("tel:", ""), contactType: "randevu", availableLanguage: "Turkish" },
   address: { "@type": "PostalAddress", streetAddress: "ATM Plaza, Ankara Ticaret Merkezi", addressLocality: "Çankaya", addressRegion: "Ankara", addressCountry: "TR" },
