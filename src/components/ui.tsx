@@ -27,7 +27,7 @@ export async function Photo({
   const shown = edit ? (await readOverrides())[`img:${edit}`] ?? src : src;
   return (
     <div className={`relative overflow-hidden bg-linen ${className}`} {...(edit ? { "data-ed-img": edit } : {})}>
-      <Image src={shown} alt={alt} fill sizes={sizes} priority={priority} className="object-cover" style={position ? { objectPosition: position } : undefined} />
+      <Image src={shown} alt={alt} fill sizes={sizes} preload={priority} fetchPriority={priority ? "high" : undefined} className="object-cover" style={position ? { objectPosition: position } : undefined} />
     </div>
   );
 }

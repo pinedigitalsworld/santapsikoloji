@@ -3,8 +3,8 @@ import { ContactBand, Testimonials } from "@/components/Sections";
 import { PageHeader } from "@/components/ui";
 
 export const metadata: Metadata = {
-  title: "Danışan Yorumları",
-  description: "Danışanlarımızın Santa Psikoloji'deki terapi ve danışmanlık süreçlerine dair deneyimleri.",
+  title: "Danışan Yorumları ve Deneyimleri",
+  description: "Danışanlarımızın Ankara Santa Psikoloji'deki terapi ve danışmanlık süreçlerine dair deneyimleri ve geri bildirimleri.",
   alternates: { canonical: "/danisan-yorumlari" },
 };
 

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { EditChip } from "@/components/EditChip";
 import { JsonLd } from "@/components/JsonLd";
+import { absUrl, breadcrumbLd } from "@/lib/seo";
 import { ContactBand } from "@/components/Sections";
 import { ButtonLink, Photo, Prose } from "@/components/ui";
 import { getMember, getTeam, summarize, type Block } from "@/lib/content";
@@ -36,7 +37,8 @@ export default async function MemberPage({ params }: Props) {
   if (!m) notFound();
   return (
     <>
-      <JsonLd data={{ "@context": "https://schema.org", "@type": "Person", name: m.name, jobTitle: m.role, image: `${site.url}${m.image}`, worksFor: { "@type": "Organization", name: site.name, url: site.url } }} />
+      <JsonLd data={{ "@context": "https://schema.org", "@type": "Person", name: m.name, jobTitle: m.role, image: absUrl(m.image), worksFor: { "@type": "Organization", name: site.name, url: site.url } }} />
+      <JsonLd data={breadcrumbLd([{ name: "Ana sayfa", path: "/" }, { name: "Psikologlarımız", path: "/psikologlarimiz" }, { name: m.name, path: `/psikologlarimiz/${m.slug}` }])} />
       <article className="container-page grid gap-12 pt-12 md:grid-cols-[1fr_1.7fr] md:gap-20 md:pt-20">
         <div className="md:sticky md:top-28 md:self-start">
           <Photo src={m.image} alt={`${m.name}, ${m.role}`} position={m.position} priority sizes="(min-width:768px) 35vw, 90vw" className="mx-auto aspect-[4/5] max-w-sm rounded-3xl md:max-w-none" />

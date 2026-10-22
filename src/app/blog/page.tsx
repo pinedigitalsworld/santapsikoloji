@@ -5,8 +5,8 @@ import { ContactBand, PostCard } from "@/components/Sections";
 import { getPosts } from "@/lib/content";
 
 export const metadata: Metadata = {
-  title: "Blog",
-  description: "Çift ilişkileri, aile, cinsellik ve psikolojik iyi oluş üzerine uzman yazıları.",
+  title: "Psikoloji Blogu: Çift ve Aile İlişkileri",
+  description: "Çift ilişkileri, aile, cinsellik ve psikolojik iyi oluş üzerine uzman psikologlarımızın yazıları. Ankara Santa Psikoloji blogu.",
   alternates: { canonical: "/blog" },
 };
 

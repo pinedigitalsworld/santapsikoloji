@@ -34,6 +34,7 @@ export function HeroSlider({ slides }: { slides: Slide[] }) {
   const [changed, setChanged] = useState(false);
   const [playing, setPlaying] = useState(true);
   const [reduced, setReduced] = useState(false);
+  const [armed, setArmed] = useState(false); // 2. ve 3. slayt görselleri sayfa yüklendikten sonra istenir (ilk görselle yarışmasın)
   // Düzenleme modunda (yönetici) otomatik geçiş durur; mod EditorOverlay tarafından <html data-edit> ile bildirilir.
   const editing = useSyncExternalStore(subscribeEdit, () => document.documentElement.dataset.edit === "on", () => false);
   const [epoch, setEpoch] = useState(0); // yayı, zamanlayıcıyla aynı anda yeniden başlatır
@@ -47,6 +48,13 @@ export function HeroSlider({ slides }: { slides: Slide[] }) {
     setI((cur) => { if (cur !== next) { setPrev(cur); setChanged(true); } return next; });
     setEpoch((e) => e + 1);
   }, [slides.length]);
+
+  useEffect(() => {
+    let t: ReturnType<typeof setTimeout>;
+    const arm = () => { t = setTimeout(() => setArmed(true), 1200); };
+    if (document.readyState === "complete") arm(); else window.addEventListener("load", arm, { once: true });
+    return () => { clearTimeout(t); window.removeEventListener("load", arm); };
+  }, []);
 
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -107,7 +115,9 @@ export function HeroSlider({ slides }: { slides: Slide[] }) {
           <div key={s.id} className={`hero-layer absolute inset-0 ${n === i ? `is-active ${changed ? "wipe" : ""}` : n === prev ? "is-prev" : ""}`}>
             <div className="absolute -inset-8 transition-transform duration-700 ease-out will-change-transform" style={{ transform: "translate3d(var(--px, 0px), var(--py, 0px), 0)" }}>
               <div className="hero-img absolute inset-0">
-                <Image src={s.image} alt="" fill priority={n === 0} sizes="110vw" quality={85} className="object-cover" style={{ objectPosition: s.position }} />
+                {(n === 0 || armed || n === i || n === prev) && (
+                  <Image src={s.image} alt="" fill preload={n === 0} fetchPriority={n === 0 ? "high" : "low"} sizes="110vw" quality={75} className="object-cover" style={{ objectPosition: s.position }} />
+                )}
               </div>
             </div>
           </div>

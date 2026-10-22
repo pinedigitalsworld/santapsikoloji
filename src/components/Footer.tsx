@@ -38,7 +38,7 @@ export async function Footer() {
         </address>
       </div>
       <div>
-        <p className="container-page pb-24 text-sm text-paper/60 sm:pb-8">© {new Date().getFullYear()} {site.legalName} Tüm hakları saklıdır.</p>
+        <p className="container-page pb-24 text-sm text-paper/60 sm:pb-8">© {new Date().getFullYear()} {site.legalName} Tüm hakları saklıdır. · <Link href="/gizlilik" className="underline underline-offset-4 hover:text-paper">Gizlilik ve KVKK</Link></p>
       </div>
     </footer>
   );

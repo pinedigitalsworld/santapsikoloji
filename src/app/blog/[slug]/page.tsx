@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { EditChip } from "@/components/EditChip";
 import { JsonLd } from "@/components/JsonLd";
+import { absUrl, breadcrumbLd } from "@/lib/seo";
 import { ContactBand, PostCard } from "@/components/Sections";
 import { Photo, Prose } from "@/components/ui";
 import { getPost, getPosts } from "@/lib/content";
@@ -32,13 +33,14 @@ export default async function PostPage({ params }: Props) {
   const date = new Date(p.date).toLocaleDateString("tr-TR", { day: "numeric", month: "long", year: "numeric" });
   return (
     <>
-      <JsonLd data={{ "@context": "https://schema.org", "@type": "BlogPosting", headline: p.title, datePublished: p.date, image: p.image ? `${site.url}${p.image}` : undefined, author: { "@type": "Organization", name: site.name }, publisher: { "@type": "Organization", name: site.name, logo: { "@type": "ImageObject", url: `${site.url}/images/SANTA_LOGO.png` } }, mainEntityOfPage: `${site.url}/blog/${p.slug}` }} />
+      <JsonLd data={{ "@context": "https://schema.org", "@type": "BlogPosting", headline: p.title, datePublished: p.date, dateModified: p.date, inLanguage: "tr", image: absUrl(p.image), author: { "@type": "Organization", name: site.name }, publisher: { "@type": "Organization", name: site.name, logo: { "@type": "ImageObject", url: `${site.url}/images/SANTA_LOGO.png` } }, mainEntityOfPage: `${site.url}/blog/${p.slug}` }} />
+      <JsonLd data={breadcrumbLd([{ name: "Ana sayfa", path: "/" }, { name: "Blog", path: "/blog" }, { name: p.title, path: `/blog/${p.slug}` }])} />
       <article className="pt-12 md:pt-20">
         <header className="container-page relative">
           <EditChip href={`/panel/blog/${p.slug}`} label="Bu yazıyı düzenle" />
           <h1 className="display rise max-w-4xl text-[clamp(2.25rem,5.5vw,4.25rem)]">{p.title}</h1>
           <p className="mt-5 text-ink-soft"><time dateTime={p.date}>{date}</time> · {p.minutes} dk okuma</p>
-          {p.image && <Photo src={p.image} alt="" sizes="100vw" priority className="mt-10 aspect-[16/8] rounded-[2rem]" />}
+          {p.image && <Photo src={p.image} alt={p.title} sizes="100vw" priority className="mt-10 aspect-[16/8] rounded-[2rem]" />}
         </header>
         <Prose blocks={p.blocks} className="container-read mt-12" />
         <p className="container-read mt-12"><Link href="/blog" className="text-clay underline-offset-4 hover:underline">← Tüm yazılar</Link></p>

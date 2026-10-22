@@ -20,4 +20,10 @@ export const str = (v: unknown, max: number) => (typeof v === "string" ? v.repla
 export const IMAGE_RE = /^(\/(uploads|images)\/)?[\w.\-]+\.(jpe?g|png|webp|avif|gif)$/i;
 const CLOUD_RE = /^https:\/\/res\.cloudinary\.com\/[\w-]+\/image\/upload\/[\w\-./%,]+$/;
 /** Geçerli görsel yolu: yerel dosya ya da Cloudinary adresi. */
-export const isImage = (v: string) => v.length <= 500 && (IMAGE_RE.test(v) || CLOUD_RE.test(v));
+export const isImage = (v: string) => {
+  if (v.length > 500) return false;
+  if (IMAGE_RE.test(v)) return true;
+  if (!CLOUD_RE.test(v)) return false;
+  const cloud = process.env.CLOUDINARY_CLOUD_NAME; // tanımlıysa yalnızca kendi bulut hesabımızın görselleri
+  return !cloud || v.startsWith(`https://res.cloudinary.com/${cloud}/`);
+};

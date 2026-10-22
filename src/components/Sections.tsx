@@ -154,7 +154,8 @@ export async function ServiceCatalog() {
   );
 }
 
-export async function TeamGrid() {
+/** `eager`: sayfanın ilk ekranındaysa (psikologlar sayfası) ilk fotoğraf yüksek öncelikle yüklenir. */
+export async function TeamGrid({ eager = false }: { eager?: boolean }) {
   const team = await getTeam();
   return (
     <ul className="grid max-w-4xl gap-6 sm:grid-cols-2">
@@ -164,7 +165,7 @@ export async function TeamGrid() {
           <Reveal as="li" key={m.slug} delay={i * 110} className="relative">
             <EditChip href={`/panel/ekip/${m.slug}`} />
             <Link href={`/psikologlarimiz/${m.slug}`} className="group flex h-full flex-col rounded-[2rem] bg-linen/70 p-3 transition-colors hover:bg-linen">
-              <div className="zoom"><Photo src={m.image} alt={`${m.name}, ${m.role}`} position={m.position} sizes="(min-width:1024px) 400px, (min-width:640px) 45vw, 100vw" className="aspect-square rounded-3xl" /></div>
+              <div className="zoom"><Photo src={m.image} alt={`${m.name}, ${m.role}`} position={m.position} sizes="(min-width:1024px) 400px, (min-width:640px) 45vw, 100vw" className="aspect-square rounded-3xl" priority={eager && i === 0} /></div>
               <div className="flex flex-1 flex-col px-3 pb-4 pt-5">
                 <h3 className="serif text-2xl leading-tight transition-colors group-hover:text-clay">{m.name}</h3>
                 <p className="mt-1 text-clay">{m.role}</p>

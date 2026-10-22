@@ -1,10 +1,12 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 
 /** Mesaj sunucuya kaydedilir ve yönetim panelindeki "Mesajlar" bölümüne düşer. */
 export function ContactForm({ whatsapp }: { whatsapp: string }) {
   const [v, setV] = useState({ name: "", phone: "", email: "", message: "", website: "" });
+  const [consent, setConsent] = useState(false);
   const [err, setErr] = useState("");
   const [busy, setBusy] = useState(false);
   const [sent, setSent] = useState(false);
@@ -14,9 +16,10 @@ export function ContactForm({ whatsapp }: { whatsapp: string }) {
     e.preventDefault();
     if (!v.name.trim() || !v.message.trim()) { setErr("Lütfen adınızı ve mesajınızı yazın."); return; }
     if (!v.phone.trim() && !v.email.trim()) { setErr("Size dönebilmemiz için telefon ya da e-posta bırakın."); return; }
+    if (!consent) { setErr("Devam etmek için aydınlatma metnini onaylamanız gerekir."); return; }
     setErr(""); setBusy(true);
     try {
-      const res = await fetch("/api/iletisim", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(v) });
+      const res = await fetch("/api/iletisim", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...v, consent }) });
       const json = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(json.error ?? "Mesaj gönderilemedi. Lütfen tekrar deneyin.");
       setSent(true);
@@ -34,7 +37,7 @@ export function ContactForm({ whatsapp }: { whatsapp: string }) {
         <p className="mt-3 text-ink-soft">En kısa sürede sizinle iletişime geçeceğiz. Acil bir durumda WhatsApp’tan da yazabilirsiniz.</p>
         <div className="mt-6 flex flex-wrap gap-3">
           <a href={whatsapp} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-12 items-center rounded-full bg-clay px-6 font-medium text-paper transition-colors hover:bg-clay-deep">WhatsApp’tan yazın</a>
-          <button type="button" onClick={() => { setSent(false); setV({ name: "", phone: "", email: "", message: "", website: "" }); }} className="inline-flex min-h-12 items-center rounded-full border border-ink/25 px-6 font-medium transition-colors hover:bg-ink hover:text-paper">Yeni mesaj yaz</button>
+          <button type="button" onClick={() => { setSent(false); setV({ name: "", phone: "", email: "", message: "", website: "" }); setConsent(false); }} className="inline-flex min-h-12 items-center rounded-full border border-ink/25 px-6 font-medium transition-colors hover:bg-ink hover:text-paper">Yeni mesaj yaz</button>
         </div>
       </div>
     );
@@ -63,6 +66,10 @@ export function ContactForm({ whatsapp }: { whatsapp: string }) {
         <label htmlFor="mesaj" className="font-medium">Mesajınız</label>
         <textarea id="mesaj" name="mesaj" rows={5} required maxLength={2000} value={v.message} onChange={set("message")} className={field} placeholder="Nasıl yardımcı olabiliriz?" aria-describedby={d} />
       </div>
+      <label className="flex items-start gap-3 text-base">
+        <input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} className="mt-1.5 size-5 shrink-0 accent-clay" aria-describedby={d} />
+        <span><Link href="/gizlilik" className="underline underline-offset-4 hover:text-clay" target="_blank">Gizlilik ve KVKK aydınlatma metnini</Link> okudum; verilerimin talebime yanıt verilmesi amacıyla işlenmesini kabul ediyorum.</span>
+      </label>
       {/* Bal küpü: insanlar görmez, botlar doldurur. */}
       <div aria-hidden className="absolute -left-[9999px] h-0 w-0 overflow-hidden">
         <label>Web sitesi<input tabIndex={-1} autoComplete="off" value={v.website} onChange={set("website")} /></label>
@@ -72,7 +79,7 @@ export function ContactForm({ whatsapp }: { whatsapp: string }) {
         {busy && <span className="pn-spin size-4 rounded-full border-2 border-paper border-t-transparent" aria-hidden />}
         {busy ? "Gönderiliyor…" : "Mesajı gönder"}
       </button>
-      <p className="text-base text-ink-soft">Mesajınız yalnızca Santa Psikoloji ekibi tarafından görülür. Görüşmeler gizlilik ilkesi çerçevesinde yürütülür.</p>
+      <p className="text-base text-ink-soft">Mesajınız yalnızca Santa Psikoloji ekibi tarafından görülür. Lütfen mesaja ayrıntılı sağlık bilgisi yazmayın, bunları görüşmede konuşabiliriz.</p>
     </form>
   );
 }

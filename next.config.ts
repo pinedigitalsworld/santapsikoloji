@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { redirects } from "./redirects";
 
 const isDev = process.env.NODE_ENV === "development";
 
@@ -15,32 +16,14 @@ const csp = [
   "base-uri 'self'",
   "form-action 'self'",
   "frame-ancestors 'none'",
+  ...(isDev ? [] : ["upgrade-insecure-requests"]),
 ].join("; ");
 
-
-// Eski WordPress sitesindeki adresler yeni yapıya kalıcı (301) yönlendirilir.
-const oldBlogPosts = ["cinsel-mitler", "ebeveynlerinden-ayrisamayan-ciftlerin-iliskileri-ve-evlilikte-yasadigi-sorunlar", "madonna-fahise-sendromu", "cinsellik-ile-ilgili-ilk-calismalar", "cinsellikte-fanteziler-ve-parafili", "hangi-durumlarda-aile-ve-cift-terapisi-destegi-alinmalidir"];
-const oldTemplatePages = ["counseling", "therapy-center", "helpline", "addiction-rehab", "youth-center", "service-plus", "online-booking", "pricing", "newsletter-popups", "typography", "blog-list", "blog-grid", "blog-portfolio", "shop", "cart", "checkout", "my-account", "wishlist-page", "privacy-policy"];
-
-const redirects = [
-  { source: "/team/mustafa-egren", destination: "/psikologlarimiz" },
-  { source: "/psikologlarimiz/mustafa-egren", destination: "/psikologlarimiz" },
-  { source: "/team", destination: "/psikologlarimiz" },
-  { source: "/team/:slug", destination: "/psikologlarimiz/:slug" },
-  { source: "/merak-edilen-sorular", destination: "/sss" },
-  { source: "/blog-yazilarimiz", destination: "/blog" },
-  { source: "/category/:path*", destination: "/blog" },
-  { source: "/testimonials/:path*", destination: "/danisan-yorumlari" },
-  { source: "/randevu-al", destination: "/iletisim" },
-  { source: "/contacts", destination: "/iletisim" },
-  { source: "/consultation", destination: "/iletisim" },
-  ...oldBlogPosts.map((slug) => ({ source: `/${slug}`, destination: `/blog/${slug}` })),
-  ...oldTemplatePages.map((slug) => ({ source: `/${slug}`, destination: "/" })),
-].map((r) => ({ ...r, permanent: true }));
 
 const nextConfig: NextConfig = {
   redirects: async () => redirects,
   poweredByHeader: false,
+  skipTrailingSlashRedirect: true, // eğik çizgi yönlendirmesini redirects.ts yapar (301, tek adım)
   images: {
     formats: ["image/avif", "image/webp"],
     qualities: [75, 85],
@@ -66,8 +49,19 @@ const nextConfig: NextConfig = {
           { key: "X-Frame-Options", value: "DENY" },
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
           { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(), interest-cohort=()" },
+          { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
+          { key: "X-Permitted-Cross-Domain-Policies", value: "none" },
           { key: "Strict-Transport-Security", value: "max-age=63072000" },
         ],
+      },
+      {
+        // Yönetim paneli ve API'ler arama motorlarına kapalı ve önbelleğe alınmaz.
+        source: "/panel/:path*",
+        headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow, noarchive" }, { key: "Cache-Control", value: "private, no-store" }],
+      },
+      {
+        source: "/api/:path*",
+        headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }, { key: "Cache-Control", value: "no-store" }],
       },
       {
         source: "/images/:path*",

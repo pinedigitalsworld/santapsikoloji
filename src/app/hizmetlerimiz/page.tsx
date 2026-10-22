@@ -4,8 +4,8 @@ import { ContactBand, ServiceCatalog } from "@/components/Sections";
 import { getSite } from "@/lib/site-server";
 
 export const metadata: Metadata = {
-  title: "Hizmetlerimiz",
-  description: "Bireysel, çift, aile, çocuk-ergen danışmanlığı; EMDR, bilişsel davranışçı terapi, oyun terapisi, psikodrama, MOXO dikkat testi ve daha fazlası.",
+  title: "Psikolojik Danışmanlık Hizmetleri Ankara",
+  description: "Ankara Çankaya'da bireysel, çift, aile ve çocuk-ergen danışmanlığı; EMDR, bilişsel davranışçı terapi, oyun terapisi, psikodrama ve MOXO dikkat testi.",
   alternates: { canonical: "/hizmetlerimiz" },
 };
 

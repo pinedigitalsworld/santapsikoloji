@@ -29,7 +29,7 @@ export default async function Home() {
               <Ed k="home.about.lead">Santa Eğitim ve Danışmanlık Ltd., 2023 yılında kurulmuştur.</Ed>
             </p>
             <p className="mt-6 max-w-xl text-ink-soft">
-              <Ed k="home.about.text">Psikolojik iyi oluşu merkeze alan, bilimsel temelli ve etik ilkelere bağlı bir anlayışla çalışıyoruz. Kuruluşumuzdan bu yana; çocuk, ergen, çift ve yetişkinlere yönelik psikolojik danışmanlık, değerlendirme ve eğitim hizmetlerini bütüncül bir bakış açısıyla sunmayı hedeflemekteyiz.</Ed>
+              <Ed k="home.about.text">Ankara Çankaya&apos;daki merkezimizde psikolojik iyi oluşu merkeze alan, bilimsel temelli ve etik ilkelere bağlı bir anlayışla çalışıyoruz. Kuruluşumuzdan bu yana; çocuk, ergen, çift ve yetişkinlere yönelik psikolojik danışmanlık, değerlendirme ve eğitim hizmetlerini bütüncül bir bakış açısıyla sunmayı hedeflemekteyiz.</Ed>
             </p>
             <Link href="/hakkimizda" className="mt-8 inline-flex min-h-11 items-center gap-2 text-clay underline-offset-4 hover:underline">Devamını görün <Arrow /></Link>
           </div>

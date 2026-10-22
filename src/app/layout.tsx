@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Fraunces, Instrument_Sans } from "next/font/google";
+import localFont from "next/font/local";
 import { EditorLoader } from "@/components/EditorLoader";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
@@ -11,18 +11,19 @@ import { site } from "@/lib/site";
 import { getSite } from "@/lib/site-server";
 import "./globals.css";
 
-const fraunces = Fraunces({ variable: "--font-fraunces", subsets: ["latin", "latin-ext"], display: "swap", axes: ["opsz"] });
-const instrument = Instrument_Sans({ variable: "--font-instrument", subsets: ["latin", "latin-ext"], display: "swap" });
+// Türkçe için indirgenmiş alt küme fontlar (bkz. fonts/README.md): Google'ın latin + latin-ext dosyalarından ~80 KB daha hafif.
+const fraunces = localFont({ src: [{ path: "./fonts/Fraunces-tr.woff2", weight: "300 600", style: "normal" }], variable: "--font-fraunces", display: "swap", adjustFontFallback: false, fallback: ["Fraunces Fallback", "ui-serif", "Georgia", "serif"] });
+const instrument = localFont({ src: [{ path: "./fonts/InstrumentSans-tr.woff2", weight: "400 700", style: "normal" }], variable: "--font-instrument", display: "swap", adjustFontFallback: false, fallback: ["Instrument Sans Fallback", "ui-sans-serif", "system-ui", "sans-serif"] });
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
-  title: { default: `${site.name} | Ankara Psikolojik Danışmanlık`, template: `%s | ${site.name}` },
+  title: { default: `Ankara Psikolog ve Psikolojik Danışmanlık | ${site.name}`, template: `%s | ${site.name}` },
   description: site.description,
   applicationName: site.name,
   alternates: { canonical: "/" },
   openGraph: {
     type: "website", locale: "tr_TR", siteName: site.name, url: "/",
-    title: `${site.name} | Ankara Psikolojik Danışmanlık`, description: site.description,
+    title: `Ankara Psikolog ve Psikolojik Danışmanlık | ${site.name}`, description: site.description,
     images: [{ url: "/og.jpg", width: 1200, height: 630, alt: "Santa Psikoloji danışma odası: pencereden Ankara manzarası, kanepe ve bitkiler" }],
   },
   twitter: { card: "summary_large_image", images: ["/og.jpg"] },
@@ -44,6 +45,10 @@ const businessLd = (s: Awaited<ReturnType<typeof getSite>>) => {
   telephone: s.phoneHref.replace("tel:", ""),
   email: s.email,
   sameAs: [s.instagram],
+  hasMap: s.mapsHref,
+  areaServed: { "@type": "City", name: "Ankara" },
+  knowsLanguage: "tr",
+  contactPoint: { "@type": "ContactPoint", telephone: s.phoneHref.replace("tel:", ""), contactType: "randevu", availableLanguage: "Turkish" },
   address: { "@type": "PostalAddress", streetAddress: "ATM Plaza, Ankara Ticaret Merkezi", addressLocality: "Çankaya", addressRegion: "Ankara", addressCountry: "TR" },
   openingHoursSpecification: [{ "@type": "OpeningHoursSpecification", dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"], opens: "10:00", closes: "19:00" }],
   };

@@ -4,8 +4,8 @@ import { ContactBand, TeamGrid } from "@/components/Sections";
 import { getAbout } from "@/lib/content";
 
 export const metadata: Metadata = {
-  title: "Hakkımızda",
-  description: "Santa Eğitim ve Danışmanlık: 2023'te kuruldu. Misyonumuz, vizyonumuz ve çalışma anlayışımız.",
+  title: "Ankara Psikoloji Merkezi Hakkımızda",
+  description: "Santa Eğitim ve Danışmanlık, 2023'te Ankara Çankaya'da kuruldu. Bilimsel temelli, etik ilkelere bağlı çalışma anlayışımızı, misyon ve vizyonumuzu tanıyın.",
   alternates: { canonical: "/hakkimizda" },
 };
 

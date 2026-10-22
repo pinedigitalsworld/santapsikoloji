@@ -4,8 +4,8 @@ import { PageHeader, Photo } from "@/components/ui";
 import { getSite } from "@/lib/site-server";
 
 export const metadata: Metadata = {
-  title: "İletişim",
-  description: "Santa Psikoloji, ATM Plaza Ankara Ticaret Merkezi Çankaya. Randevu için 0544 726 83 06. Pazartesi–Cumartesi 10:00–19:00.",
+  title: "Randevu Al ve İletişim: Ankara Çankaya",
+  description: "Santa Psikoloji, ATM Plaza Ankara Ticaret Merkezi Çankaya. Randevu için 0544 726 83 06. Pazartesi–Cumartesi 10:00–19:00. WhatsApp ve form ile ulaşın.",
   alternates: { canonical: "/iletisim" },
 };
 

@@ -17,6 +17,10 @@
   --radius-arch: 999px 999px 0 0;
 }
 
+/* Yedek (fallback) fontlar, asıl font yüklenince yer değiştirmeyi (CLS) sıfırlamak için ölçeklenmiştir. */
+@font-face { font-family: "Fraunces Fallback"; src: local("Times New Roman"); ascent-override: 84.71%; descent-override: 22.09%; line-gap-override: 0%; size-adjust: 115.45%; }
+@font-face { font-family: "Instrument Sans Fallback"; src: local("Arial"); ascent-override: 94.42%; descent-override: 24.33%; line-gap-override: 0%; size-adjust: 102.74%; }
+
 :root { color-scheme: light; }
 
 html { scroll-behavior: smooth; }

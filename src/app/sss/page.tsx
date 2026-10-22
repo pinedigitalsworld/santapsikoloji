@@ -6,7 +6,7 @@ import { Faq, PageHeader } from "@/components/ui";
 import { getFaq } from "@/lib/content";
 
 export const metadata: Metadata = {
-  title: "Sıkça Sorulan Sorular",
+  title: "Psikolojik Danışmanlık Sık Sorulan Sorular",
   description: "Psikolojik danışmanlık kimler için uygundur, görüşmeler gizli midir, randevu nasıl alınır? Merak edilen soruların yanıtları.",
   alternates: { canonical: "/sss" },
 };
