@@ -28,6 +28,7 @@ export const metadata: Metadata = {
   },
   twitter: { card: "summary_large_image", images: ["/og.jpg"] },
   robots: { index: true, follow: true },
+  other: { "facebook-domain-verification": "ir1qvi1f0vd2zl56m9ze9lzevjgvil" },
 };
 
 export const viewport: Viewport = { themeColor: "#f2f1ee", width: "device-width", initialScale: 1 };
